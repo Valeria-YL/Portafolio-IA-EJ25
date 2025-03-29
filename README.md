@@ -40,3 +40,5 @@
 [Act.10 Regresión Lineal Múltiple](https://github.com/Valeria-YL/Portafolio-IA-EJ25/tree/06bb46c18f9b961014f74a7507637554d630216e/Actividades/Regresi%C3%B3n%20Lineal%20M%C3%BAltiple)
 
 [Act.11 Regresión Logística](https://github.com/Valeria-YL/Portafolio-IA-EJ25/tree/06bb46c18f9b961014f74a7507637554d630216e/Actividades/Regresi%C3%B3n%20Log%C3%ADstica)
+
+[Act.12 Arbol de Decisión](https://github.com/Valeria-YL/Portafolio-IA-EJ25/tree/a3fa13bd0a790acba81a102320710268bc2abd14/Actividades/Arbol%20de%20Decisi%C3%B3n)
