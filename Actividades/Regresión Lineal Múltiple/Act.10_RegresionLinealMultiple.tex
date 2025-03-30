@@ -1,0 +1,197 @@
+\documentclass{pssbmac}
+
+
+\usepackage[english]{babel} 
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{epsfig}
+\usepackage{indentfirst}
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools}
+\usepackage{url}
+\usepackage{csquotes}
+% Ambientes pré-definidos
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{remark}{Remark}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{lema}{Lema}[section]
+\newtheorem{prop}{Proposi\c{c}\~ao}[section]
+\newtheorem{defi}{Defini\c{c}\~ao}[section]
+\newtheorem{obs}{Observa\c{c}\~ao}[section]
+\newtheorem{cor}{Corol\'ario}[section]
+
+
+
+\begin{document}
+
+
+
+\title{Regresión Lineal Múltiple}
+
+\author{
+    {\large Valeria Ybarra López}\\
+    {\small Matrícula: 2047880} \\
+}
+\criartitulo
+
+
+\noindent
+
+
+\section{Introducción}
+Un modelo de regresión lineal múltiple es un modelo estadístico versátil que evalúa las relaciones entre un destino continuo y los predictores.
+
+Los predictores(o variables de entrada) pueden ser campos continuos, categóricos o derivados, de modo que las relaciones no lineales también estén soportadas. Es considerado un modelo lineal porque consiste en términos de aditivos en los que cada término es un predictor que se multiplica por un coeficiente estimado.
+
+El tener más de una variable de entrada ayuda a obtener predicciones más complejas. La "ecuación de la recta", ahora pasa a ser: \(Y=b+m1X1+m2X2+...+m(n)X(n)\)
+y deja de ser una recta.
+ 
+
+\section{Metodología}
+
+Para la realización de esta activdad, se siguieron las instrucciones proporcionadas en la página 34 del libro "Aprenda Machine Learning".
+\subsection{Continuación de la actividad 9: Regresión Lineal}
+
+Se creó una carpeta con el nombre de "Regresión Lineal Múltiple" en donde se guardó el archivo .csv de entrada proporcionado anteriormente  por el libro para poder realizar el código en python, en esa misma carpeta se creó un archivo .py para realizar la actividad.
+
+\subsection{Código}
+Utilizando el mismo código de la actividad 9: Regresión Lineal, le agregaremos 2 "variables predicativas o de entrada" para poder realizar mejores predicciones y también el tener 2 variables nos permite gráficar en 3D.
+
+
+La primera variable seguira siendo la \textbf{cantidad de palabras} y la segunda variable \textbf{la suma de 3 columnas de entrada}:
+
+\begin{lstlisting}
+suma = (filtered_data["# of Links"] + filtered_data['# of comments'].fillna(0) + filtered_data['# Images video'])
+dataX2 = pd.DataFrame()
+dataX2["Word count"] = filtered_data["Word count"]
+dataX2["suma"] = suma
+XY_train = np.array(dataX2)
+z_train = filtered_data['# Shares'].values
+\end{lstlisting}
+Tenemos las 2 variables de entrada en XY\_train y nuestra variable de salida pasa de ser "Y" a ser el eje "Z", de esta manera se podra representar los datos en un gráfico 3D.
+
+\vspace{.5cm}
+Creamos una instancia del modelo LinearRegression con SKLearn, pero esta véz tendrá dos dimensiones que entrenar: las que contiene XY\_train. 
+Utilizando el método ".fit()", entrenamos el modelo (XY\_train como variables de entrada y z\_train como  variable objetivo).
+Imprimimos los coeficientes los cuales indicarán como fluyen las variables de entrada en la variable objetivo. (en este caso serán dos coeficientes,ya que hay dos dimensiones en los datos de entrada)y puntajes obtenidos cómo el error cuadrático medio calcula cuánto se desvían las predicciones (z\_pred) de los valores reales (z\_train); y la varianza que indica qué tan bien las variables de entrada explican la dispersión de la variable objetivo:
+\begin{lstlisting}
+# Creamos un nuevo objeto de Regresión Lineal
+regr2 = linear_model.LinearRegression()
+# Entrenamos el modelo, esta vez, con 2 dimensiones
+# obtendremos 2 coeficientes, para graficar un plano
+regr2.fit(XY_train, z_train)
+ # Hacemos la predicción con la que tendremos puntos sobre el plano hallado
+z_pred = regr2.predict(XY_train)
+# Los coeficientes
+print('Coefficients: \n', regr2.coef_)
+# Error cuadrático medio
+print("Mean squared error: %.2f" % mean_squared_error(z_train, z_pred))
+# Evaluamos el puntaje de varianza (siendo 1.0 el mejor posible)
+print('Variance score: %.2f' % r2_score(z_train, z_pred))
+\end{lstlisting}
+
+\vspace{.3cm}
+\textbf{Visualizar un plano en 3 Dimensiones en Python}
+
+\vspace{.4cm}
+Se graficarán en 3D los puntos originales de las características de entrada en azul y los puntos proyectados en el plano en rojo. El eje Z de la gráfica representa la "altura," que es la cantidad de Shares.
+
+
+En el siguiente código se crea una figura y un objeto 3D para visualizar los datos, después creamos una malla rectangular, definida por valores de entrada en el eje X (cantidad de palabras) y en el eje Y (cantidad de enlaces, comentarios e imágenes). 
+Con los coeficientes de la regresión lineal múltiple, se calcula el valor correspondiente en Z (cantidad de Shares), este valor incluye la suma de las contribuciones de los ejes X e Y, además del punto de intercepción.
+Sobre la malla, se grafica una superficie semi-transparente para representar el plano de la regresión. Se dibujan los puntos originales en color azul y los puntos proyectados sobre el plano de regresión en color rojo. Por último, se ajusta la vista de la gráfica y añadimos las etiquetas y el título para facilitar la visualización de los datos.
+\begin{lstlisting}
+    
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+# Creamos una malla, sobre la cual graficaremos el plano
+xx, yy = np.meshgrid(np.linspace(0, 3500, num=10), np.linspace(0, 60, num=10))
+
+# calculamos los valores del plano para los puntos x e y
+nuevoX = (regr2.coef_[0] * xx)
+nuevoY = (regr2.coef_[1] * yy)
+
+# calculamos los valores para z. Debemos sumar el punto de intercepion
+z = (nuevoX + nuevoY + regr2.intercept_)
+# Graficamos el plano
+ax.plot_surface(xx, yy, z, alpha=0.2, cmap='hot')
+# Graficamos en azul los puntos en 3D
+ax.scatter(XY_train[:, 0], XY_train[:, 1], z_train, c='blue',s=30)
+ # Graficamos en rojo
+ax.scatter(XY_train[:, 0], XY_train[:, 1], z_pred, c='red',s=40)
+
+# con esto situamos la "camara" con la que visualizamos
+ax.view_init(elev=30., azim=65)
+ax.set_xlabel('Cantidad de Palabras')
+ax.set_ylabel('Cantidad de Enlaces,Comentarios e Imagenes')
+ax.set_zlabel('Compartido en Redes')
+ax.set_title('Regresión Lineal con Multiples Variables')
+\end{lstlisting}
+
+\vspace{.4cm}
+\textbf{Predicción con el modeo de Múltiples Variables}
+
+El modelo predictivo toma como entrada los valores de las características y realiza una estimación sumando las cantidades relevantes (en este caso, enlaces, comentarios e imágenes) y realiza la predicción con el método ".predict()" . 
+El código predice cuantos "Shares" obtendría un artículo con 2000 palabras, 10 enlaces, 4 comentarios y 6 imagenes.
+\begin{lstlisting}
+    z_Dosmil = regr2.predict([[2000, 10+4+6]])
+    print('Prediccion:',int(z_Dosmil[0]))
+\end{lstlisting}
+
+
+\section{Resultados}
+
+Coeficientes, error y varianza: 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.7\textwidth]{coeficientes.png}
+\caption{ {\small Coeficientes y puntajes obtenidos del modelo.}}
+\label{figura01}
+\end{figure}
+
+
+
+
+\vspace{5cm}
+Grafica 3D:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.9\textwidth]{3d.png}
+\caption{ {\small La gráfica permite visualizar cómo el modelo ajusta los datos reales (puntos azules) al plano de regresión (puntos rojos) y muestra las tendencias aprendidas en el espacio 3D. Si los puntos azules y rojos están cerca, el modelo tiene un buen ajuste.}}
+\label{figura02}
+\end{figure}
+
+
+Predicción utilizando el modelo de regresión lineal múltiple:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.7\textwidth]{pred.png}
+\caption{ {\small Esta predicción nos da 20518, un poco mejor que nuestra predicción anterior en la cual solo se usaba 1 variable.}}
+\label{figura03}
+\end{figure}
+
+
+\section{Conclusión}
+Utilizamos SKLearn en Python para construir modelos de regresión lineal con 1 o múltiples variables, aunque las predicciones obtenidas no fueron precisas debido al alto margen de error. Este ejercicio permite ver el funcionamiento de un modelo con múltiples variables, y nos deja a entender que para obtener un modelo más preciso, debemos de utilizar más dimensiones y encontrar mejores datos de entrada.
+
+\section{Referencias}
+Bagnato, J. (2020). Aprende Machine Learning en Español.
+
+\vspace{.3cm}
+IBM.(2024). Regresión Lineal Múltiple. https://www.ibm.com/docs/es/cognos-analytics/11.1.0?topic=tests-multiple-linear-regression
+\end{document}
+
+
+
+
