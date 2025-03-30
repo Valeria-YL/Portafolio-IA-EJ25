@@ -1,0 +1,199 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{Random Forest}
+\author{Valeria Ybarra López}
+\date{29, Marzo 2025}
+\usepackage [latin1]{inputenc}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{epsfig}
+\usepackage{indentfirst}
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools}
+
+\usepackage{xcolor} 
+
+\lstset{
+    language=Python,                % Idioma del código
+    basicstyle=\ttfamily\footnotesize, % Fuente y tamaño
+    keywordstyle=\color{blue},     % Color de las palabras clave
+    commentstyle=\color{green},    % Color de los comentarios
+    stringstyle=\color{red},       % Color de las cadenas
+    numbers=left,                  % Números de línea a la izquierda
+    numberstyle=\tiny,             % Estilo de números de línea
+    stepnumber=1,                  % Cada línea numerada
+    frame=single,                  % Cuadro alrededor del código
+    breaklines=true,               % Permitir salto de línea
+    tabsize=4                      % Tamaño de tabulación
+}
+
+
+\begin{document}
+
+\maketitle
+
+\section{Introducción}
+Un Random Forest  es un algoritmo de aprendizaje automático de uso común, que combina el resultado de múltiples árboles de decisión para llegar a un resultado único. Su facilidad de uso y flexibilidad han impulsado su adopción, ya que maneja problemas de clasificación y regresión.
+
+
+
+Random Forest funciona así:
+
+\begin{enumerate}
+    \item Seleccionamos $k$ características (columnas) de las $m$ totales, siendo $k < m$, y creamos un árbol de decisión con esas $k$ características.
+    \item Creamos $n$ árboles, variando siempre la cantidad de $k$ características, y también podríamos variar la cantidad de muestras que pasamos a esos árboles (esto es conocido como \textit{``bootstrap sample''}).
+    \item Tomamos cada uno de los $n$ árboles y les pedimos que hagan una misma clasificación. Guardamos el resultado de cada árbol obteniendo $n$ salidas.
+    \item Calculamos los votos obtenidos para cada \textit{``clase''} seleccionada y consideraremos la más votada como la clasificación final de nuestro \textit{``bosque''}.
+\end{enumerate}
+
+\section{Metodología}
+
+\subsection{Carpeta Random Forest}
+Creamos una carpeta llamada Random Forest en donde descargaremos el dataset proporcionado por el libro para poder realizar la actividad, también crearemos en esa misma carpeta un código .py para la codificación de la actividad.
+
+
+
+\subsection{Archivo csv}
+Utiliazmos un dataset de kaggle con información de fraude  en tarjetas de crédito. Cuenta con 284807 filas y 31 columnas de características. Nuestra salida será 0 si es un cliente “normal” o 1 si hizo uso fraudulento.
+
+
+\subsection{Código}
+Primero, importaremos las bibliotecas necesarias: 
+\begin{lstlisting}
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.decomposition import PCA
+from sklearn.tree import DecisionTreeClassifier
+
+from pylab import rcParams
+
+from imblearn.under_sampling import NearMiss
+from imblearn.over_sampling import RandomOverSampler
+from imblearn.combine import SMOTETomek
+from imblearn.ensemble import BalancedBaggingClassifier
+from collections import Counter
+rcParams['figure.figsize'] = 14, 8.7 # Golden Mean
+LABELS = ["Normal","Fraud"]
+
+\end{lstlisting}
+
+\textbf{Cargamos Datos}
+
+Leemos el archivo csv, usamos la función .head() para ver las primeras 5 filas, y .shape para obtener el número de filas y columnas que tiene el dataframe.
+\begin{lstlisting}
+df = pd.read_csv("creditcard.csv")
+print(df.head(n=5)) 
+print(df.shape)
+\end{lstlisting}
+
+\textbf{Vemos Desbalanceo}
+
+Para visualizar la comparación de cuantos datos hay en 0=Normal y 1=Fraude, usamos la siguiente función para contar la cantidad de ocurrencias de cada valor en la columna  "class'' del dataframe: 
+\begin{lstlisting}
+df['Class'].value_counts(sort=True)
+\end{lstlisting}
+
+\textbf{Creamos el Dataset}
+
+
+El código separa los registros normales (normal\_df) y los registros fraude (fraud\_df). Dividimos los datos en variable independiente (X) y dependiente (y).
+Define la función mostrar\_resultados la cuál evalúa las predicciones
+
+\begin{lstlisting}
+normal_df = df[df.Class == 0] #registros normales
+fraud_df = df[df.Class == 1] #casos de fraude
+y = df['Class']
+X = df.drop('Class', axis=1)
+X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.7)
+
+def mostrar_resultados(y_test, pred_y):
+    conf_matrix = confusion_matrix(y_test, pred_y)
+    plt.figure(figsize=(8, 8))
+    sns.heatmap(conf_matrix, xticklabels=LABELS, yticklabels=LABELS, annot=True, fmt="d");
+    plt.title("Confusion matrix")
+    plt.ylabel('True class')
+    plt.xlabel('Predicted class')
+    plt.show()
+    print (classification_report(y_test, pred_y))
+\end{lstlisting}
+
+\textbf{Creamos el modelo y lo entrenamos}
+
+Para el modelo utilizaremos RandomForestClassifier de Scikit-Learn.
+
+Al ajustar el modelo debemos de contemplar los hiperparámetros, puesto que nos ayudarán a que el bosque de mejores resultados:
+\begin{itemize}
+    \item \textbf{n\_estimators}: será la cantidad de árboles que generaremos.
+    \item \textbf{max\_features}: la manera de seleccionar la cantidad máxima de \textit{features} para cada árbol.
+    \item \textbf{min\_sample\_leaf}: número mínimo de elementos en las hojas para permitir un nuevo \textit{split} (división) del nodo.
+    \item \textbf{oob\_score}: es un método que emula el \textit{cross-validation} en árboles y permite mejorar la precisión y evitar \textit{overfitting}.
+    \item \textbf{boostrap}: para utilizar diversos tamaños de muestras para entrenar. Si se pone en falso, utilizará siempre el dataset completo.
+    \item \textbf{n\_jobs}: si tienes múltiples \textit{cores} en tu CPU, puedes indicar cuántos puede usar el modelo al entrenar para acelerar el entrenamiento.
+\end{itemize}
+
+\begin{lstlisting}
+# Crear el modelo con 100 arboles
+model = RandomForestClassifier(n_estimators=100,bootstrap = True, verbose=2,max_features = 'sqrt')
+\end{lstlisting}
+
+
+\section{Resultados}
+
+\textbf{Cargamos datos}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.8\textwidth]{head.png}
+\caption{ {\small Resultado de df.head(n=5), muestra las 5 filas de nuestro dataframe }}
+\label{figura01}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.2\textwidth]{shape.png}
+\caption{ {\small Resultado de df.shape, tenemos 284807 filas y 31 columnas. }}
+\label{figura01}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{des.png}
+    \caption{Vemos que hay un desbalance muy grande, tenemos 284315 datos clasificados como 0 (normal) y 492 como 1 (fraude).}
+    \label{fig:enter-label}
+\end{figure}
+
+\textbf{Resultados después de entrenar el modelo}
+
+\begin{figure}[H]
+    \centering
+\includegraphics[width=0.7\linewidth]{matrix.png}
+    \caption{{\small Vemos muy buenos resultados, clasificando con error apenas 11 + 28 muestras.}}
+    \label{fig:enter-label}
+\end{figure}
+\begin{figure}[H]
+\centering\includegraphics[width=0.5\linewidth]{resultado.png}
+\caption{{\small Podemos ver que para la clase que detecta los casos de fraude se tiene un valor de recall de 0.80, lo cual es buen indicador, y el F1-score macro avg es de 0.93.}}
+    \label{fig:enter-label}
+\end{figure}
+
+\section{Conclusión}
+A pesar de ser una actividad bastante corta, el algoritmo de Random Forest mostró su efectividad para tartar problemas de clasificación y regresión. En este caso, aplicamos el modelo a un dataset desbalanceado sobre fraudes con tarjetas de crédito, mostrando un buen desmepeño con métricas como un recall de 0.80 para detección de fraudes y un F1-score macro promedio de 0.93. El saber elegir nuestros hiperparámetros fueron de suma importancia ya que se obtienen resultados mas precisos.
+
+
+\section{Referencias}
+Bagnato, J. (2020). Aprende Machine Learning en Español.
+
+IBM.¿Qué es el bosque aleatorio?. https://www.ibm.com/mx-es/think/topics/random-forest
+
+\end{document}
