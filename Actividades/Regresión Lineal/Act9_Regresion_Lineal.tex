@@ -1,0 +1,223 @@
+\documentclass{pssbmac}
+
+
+\usepackage[english]{babel} 
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{epsfig}
+\usepackage{indentfirst}
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools}
+\usepackage{url}
+\usepackage{csquotes}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{remark}{Remark}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{lema}{Lema}[section]
+\newtheorem{prop}{Proposi\c{c}\~ao}[section]
+\newtheorem{defi}{Defini\c{c}\~ao}[section]
+\newtheorem{obs}{Observa\c{c}\~ao}[section]
+\newtheorem{cor}{Corol\'ario}[section]
+
+
+
+\begin{document}
+
+
+
+\title{Regresión Lineal}
+
+\author{
+    {\large Valeria Ybarra López}\\
+    {\small Matrícula: 2047880} \\
+}
+\criartitulo
+
+
+\noindent
+
+
+\section{Introducción}
+  
+La regresión lineal es un método utilizado en el análisis de datos, que permite predecir valores desconocidos basandose en otros valores conocidos que están relacionados. 
+Este método establece una ecuación lineal \(Y=mx + b\) que representa la relación matemática entre la variable dependiente (desconocida) y la variable independiente (conocida). Se enfoca en representar gráficamente la relación entre dos variables: "x" (variable independiente) y "y" (variable dependiente). La variable "x" se coloca en el eje horizontal (también conocida como variable explicativa o predictiva), mientras que "y", ubicada en el eje vertical, se denomina variable de respuesta (o pronosticada).
+  
+En el ámbito del machine learning, los algoritmos analizan grandes volúmenes de datos y determinan la ecuación de regresión lineal a partir de estos. 
+
+\section{Metodología}
+
+Para la realización de esta activdad, se siguieron las instrucciones proporcionada en la página 26 del libro "Aprenda Machine Learning".
+\subsection{Creación de carpeta}
+Se creó una carpeta con el nombre de "Regresión Lineal" en donde se guardó un archivo .csv de entrada proporcionado por el libro para poder realizar el código en python, en esa misma carpeta se creó un arvhico .py para realizar la actividad.
+
+\subsection{Código}
+Primero importaremos las bibliotecas necesarias:
+
+\vspace{.3cm}
+\begin{lstlisting}
+import numpy as np
+import pandas as pd
+import seaborn as sb
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+plt.rcParams['figure.figsize'] = (16, 9)
+plt.style.use('ggplot')
+from sklearn import linear_model
+from sklearn.metrics import mean_squared_error, r2_score
+\end{lstlisting}
+
+\vspace{.3cm}
+Leemos el archvio csv y cargamos los datos de entrada con la siguiente linea de código:
+\begin{lstlisting}
+    data = pd.read_csv("./articulos_ml.csv")
+\end{lstlisting}
+
+\vspace{.2cm}
+Para ver el tamaño y sus primeros registros (primeras cinco filas) con las siguientes lineas de código:
+\begin{lstlisting}
+    print(data.shape)
+    print(data.head())
+\end{lstlisting}
+Para poder explorar los datos, usaremos: 
+\begin{lstlisting}
+    print(data.describe())
+\end{lstlisting}
+Con ayuda del método "data.drop()", eliminamos las columnas "Title", "url" y "Elapsed days" del DataFrame "data", y generamos histogramas de las columnas restantes con ".hist()"; utilizando "plt.show()" mostramos los histogramas.
+\begin{lstlisting}
+    data.drop(['Title','url', 'Elapsed days'],axis=1).hist()
+plt.show()
+\end{lstlisting}
+
+Después, filtraremos los datos para conservar únicamente los registros con menos de 3500 palabras y los que tengan una cantidad de compartidos inferior a 80,000. Además, resaltaremos los puntos, utilizando el color azul para los que tienen menos de 1808 palabras (el promedio) y naranja para los que superan esa cantidad.
+\begin{lstlisting}
+    filtered_data = data[(data['Word count'] <= 3500) & (data['# Shares'] <= 80000)]
+
+colores=['orange','blue']
+tamanios=[30,60]
+f1 = filtered_data['Word count'].values
+f2 = filtered_data['# Shares'].values
+asignar=[]
+for index, row in filtered_data.iterrows():
+    if(row['Word count']>1808):
+        asignar.append(colores[0])
+    else:
+        asignar.append(colores[1])
+plt.scatter(f1,f2, c=asignar, s=tamanios[0])
+plt.show()
+\end{lstlisting}
+
+Implementamos una regresión lineal usando la biblioteca SKLearn, para este ejemplo tomaremos "Word Count" como dato de entrada y "\#Shares" como las etiquetas. 
+Creamos una instancia del modelo LinearRegression y lo entrenamos usando el método ".fit()". Después imprimimos los coeficientes y puntajes obtenidos.
+\begin{lstlisting}
+
+dataX =filtered_data[["Word count"]]
+X_train = np.array(dataX)
+y_train = filtered_data['# Shares'].values
+regr = linear_model.LinearRegression()
+regr.fit(X_train, y_train)
+y_pred = regr.predict(X_train)
+print('Coefficients: \n', regr.coef_)
+print('Independent term: \n', regr.intercept_)
+print("Mean squared error: %.2f" % mean_squared_error(y_train, y_pred))
+print('Variance score: %.2f' % r2_score(y_train, y_pred))
+\end{lstlisting}
+Por último, probemos nuestro modelo para realizar una predicción. 
+Supongamos que queremos estimar cuántos "compartir" obtendrá el artículo sobre Machine Learning con 2000 palabras:
+\begin{lstlisting}
+    
+\end{lstlisting}
+Usamos el modelo de regresión lineal alamcenado en la variable "regr". El método ".predict()" toma como entrada el número de palabras (en este caso 2000) dentro de una lista. luego el modelo calculo cuántos "compartir" ("Shares") se espera obtener basándose en los datos con los que se entreno:
+\begin{lstlisting}
+    y_Dosmil = regr.predict([[2000]])
+print('Prediccion: ',int(y_Dosmil[0]))
+\end{lstlisting}
+
+\section{Resultados}
+
+Tamaño de los datos: 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.3\textwidth]{data.shape.png}
+\caption{ {\small Resultado de data.shape, se tiene 161 filas y 8 columnas.}}
+\label{figura01}
+\end{figure}
+
+Primeras 5 filas del DataFrame:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.7\textwidth]{data.head.png}
+\caption{ {\small Resultado de data.head}}
+\label{figura02}
+\end{figure}
+
+Estadísticas descriptivas de las columnas numéricas del DataFrame:
+\begin{figure}[H]
+\centering
+\includegraphics[width=.7\textwidth]{data.describe.png}
+\caption{ {\small Resultado de data.describe}}
+\label{figura03}
+\end{figure}
+Histogramas generados:
+\begin{figure}[H]
+\centering
+\includegraphics[width=.9\textwidth]{plt.show.png}
+\caption{ {\small En estas gráficas vemos entre qué valores se concentran la mayoría de registros.}}
+\label{figura04}
+\end{figure}
+
+
+\vspace{5cm}
+Gráfica Dispersión:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.9\textwidth]{grafica de dispersion.png}
+\caption{ {\small Después de filtrar los datos de cantidad de palabras para quedarnos con los registros con menos de 3500 palabras y también con los que tengan cantidad de compartidos menos a 80.000. Se muestran puntos en azul si tienen menos de 1808 palabras y en naranja si tienen más de 1808 palabras.}}
+\label{figura05}
+\end{figure}
+
+Regresión Lineal, Coeficientes y puntajes obtenidos, después de haber entrenado el modelo:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.5\textwidth]{coeficientes y valores.png}
+\caption{ {\small De la ecuación de la recta \(Y=mx + b\) nuestra pendiente “m” es el coeficiente 5,69 y el término
+independiente “b” es 11200.}}
+\label{figura06}
+\end{figure}
+
+Predicción en regresión lineal simple:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.3\textwidth]{pred.png}
+\caption{ {\small Nos devuelve una predicción de 22595 “Shares” para un artículo de 2000 palabras.}}
+\label{figura07}
+\end{figure}
+
+\section{Conclusión}
+
+En esta actividad se aprendió a implementar la regresión lineal para predecir valores desconocidos basándonos en datos conocidos. Desde preparar y explorar los datos hasta construir un modelo predictivo con SKLearn, cada paso ayuda a comprender mejor cómo usar ML para realizar predicciones. Además, se visualizo los datos por medio de gráficos y analizamos métricas, lo que nos permitió evaluar la precisión del modelo.
+
+\section{Referencias}
+Bagnato, J. (2020). Aprende Machine Learning en Español.
+
+\vspace{.3cm}
+Amazon Web Services. ¿Qué es la regresión lineal?. https://aws.amazon.com/es/what-is/linear-regression/ 
+\end{document}
+
+
+
+
