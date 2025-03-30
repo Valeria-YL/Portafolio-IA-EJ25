@@ -1,0 +1,427 @@
+\documentclass{pssbmac}
+
+\usepackage[spanish]{babel}
+\usepackage[english]{babel} 
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{epsfig}
+\usepackage{indentfirst}
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools}
+\usepackage{url}
+\usepackage{csquotes}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{remark}{Remark}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{lema}{Lema}[section]
+\newtheorem{prop}{Proposi\c{c}\~ao}[section]
+\newtheorem{defi}{Defini\c{c}\~ao}[section]
+\newtheorem{obs}{Observa\c{c}\~ao}[section]
+\newtheorem{cor}{Corol\'ario}[section]
+
+
+
+\begin{document}
+
+
+
+\title{Regresión Logística}
+
+\author{
+    {\large Valeria Ybarra López}\\
+    {\small Matrícula: 2047880} \\
+}
+\criartitulo
+
+
+
+\noindent
+
+
+\section{Introducción}
+La regresión lógistica es una técncia de análisis de datos que utiliza las matemáticas para identificar relaciones entre dos variables. Estas relaciones se utilizan para predecir el valor de una variable a partir de otra. Normalmente, la predicción tiene un número finito de resultados, como ``sí'' o ``no''.
+
+
+
+Esta técnica se aplica cuando los datos de entrada (o características) generan salidas discretas, no continuas, lo que la diferencia de la regresión lineal. Se trata de un Algoritmo Supervisado empleado para la calsificación. Permite resolver problemas donde las posibles soluciones son binarias (``sí'' o ``no'') o pertenecen a un número finito de ``clases'' o ``etiquetas''.
+
+
+
+Algunos Ejemplos de Regresión Logística son:
+
+
+- Clasificar si el correo que llega es Spam o No es Spam.
+
+
+- Dados unos resultados clínicos de un tumor clasificar en “Benigno” o “Maligno”.
+
+
+
+- El texto de un artículo a analizar es: Entretenimiento, Deportes, Política ó Ciencia.
+
+
+
+- A partir de historial bancario conceder un crédito o no.
+ 
+
+\section{Metodología}
+
+Para la realización de esta activdad, se siguieron las instrucciones proporcionadas en la página 39 del libro ``Aprenda Machine Learning''.
+\subsection{Creamos la carpeta Regresión Lógistica}
+
+Se creó una carpeta con el nombre de ``Regresión Logística'' en donde se guardó el archivo .csv (que contiene los datos de entrada) proporcionado por el libro para poder realizar el código en python, en esa misma carpeta se creó un archivo .py para realizar la actividad.
+
+\subsection{Archivo CSV}
+El archivo CSV nos proporciona con 170 registros de muestra para clasificar si el sistema operativo de un usuario en un sitio web es Windows, Macintosh o Linux (0, 1 y 2 respectivamente). Las características de entrada son:
+
+
+- Duración de la visita (segundos)
+
+
+- Páginas vistas en la sesión
+
+
+- Acciones del usuario (clicks, scrolls, etc.)
+
+
+- Valor de las acciones (según su importancia)
+
+\subsection{Código}
+Comenzamos el código importando ls bibliotecas necesarias:
+\begin{lstlisting}
+import pandas as pd
+import numpy as np
+from sklearn import linear_model
+from sklearn import model_selection
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score
+import matplotlib.pyplot as plt
+import seaborn as sb
+\end{lstlisting}
+
+
+\vspace{.3cm}
+Después leemos el archivo csv y lo asignamos usando Pandas a la variable "dataframe".
+\begin{lstlisting}
+    dataframe = pd.read_csv(r"usuarios_win_mac_lin.csv")
+\end{lstlisting}
+Usando el método ".head()" imprimiremos los primeros 5 registros guardados en el archivo csv.
+\begin{lstlisting}
+    print(dataframe.head())
+\end{lstlisting}
+Continuamos llamando al método ".describe()", el cual nos da información estadística (Media, desvío estándar, valores mínimo y máximo) de nuestro set de datos.
+\begin{lstlisting}
+    print(dataframe.describe())
+\end{lstlisting}
+
+\vspace{.3cm}
+
+Analizaremos la cantidad de resultados que tenemos de cada tipo haciendo uso de la función groupby:
+\begin{lstlisting}
+    print(dataframe.groupby('clase').size())
+\end{lstlisting}
+
+\vspace{.3cm}
+
+
+\textbf{Visualización de Datos}
+
+
+
+
+Realizaremos unas visualizaciones que nos podran ayudar a comprender mejor las características de la información con la que estamos trabajando, al igual que la correlación que hay entre los datos.
+Para esto primero visualizaremos en formato de historial los cuatro Features de entrada con nombres “duración”, “páginas”,”acciones” y “valor”.
+\begin{lstlisting}
+    dataframe.drop(['clase'],axis=1).hist()
+    plt.show()
+\end{lstlisting}
+
+También podemos relacionaremos  las entradas de a pares, para ver como se concentran linealmente las salidas de usuarios por colores: Sistema Operativo Windows en azul, Macintosh en verde y Linux en rojo.
+\begin{lstlisting}
+    sb.pairplot(dataframe.dropna(), hue='clase',size=4,
+    vars=["duracion", "paginas","acciones","valor"],kind='reg')
+\end{lstlisting}
+
+\vspace{.3cm}
+
+
+\textbf{Creamos el Modelo de Regresión Logística}
+
+
+
+Cargamos las variables de las 4 columnas de entrada en \(X\) excluyendo con el método drop(), la columna ``clase'', esta columna la agregamos en la variable \(y\). Ejecutamos X.shape para comprobar la dimensión de la matriz.
+\begin{lstlisting} 
+    X = np.array(dataframe.drop(['clase'],axis=1))
+    y = np.array(dataframe['clase'])
+    print(X.shape)
+\end{lstlisting}
+
+
+
+Una vez realizado este cambio, creamos nuestro modelo y con el método ".fit()", lo ajustamos al conjunto de entradas \(X\) y salidas \(y\).
+\begin{lstlisting}
+    
+    model = linear_model.LogisticRegression(max_iter=1000)
+    model.fit(X,y)
+\end{lstlisting}
+
+Después de compilar el modelo, lo utilizamos para clasificar todo el conjunto de datos de entrada \(X\)  mediante el método ".predict(X)". Luego, examinamos algunas de las predicciones generadas y comprobamos que coincidan con las salidas reales del archivo CSV.
+\begin{lstlisting}
+    predictions = model.predict(X)
+    print(predictions[0:5])
+
+\end{lstlisting}
+
+
+Después confirmamos que tan preciso es nuestro modelo utilizando "model.score()", esto nos deberá devolver la precisión de las predicciones.
+\begin{lstlisting}
+    print(model.score(X,y))
+\end{lstlisting}
+
+
+
+\vspace{.3cm}
+
+\textbf{Validación del modelo}
+
+
+
+Una buena práctica en Machine Learning es dividir los datos (de forma aleatoria)en dos conjuntos: uno para entrenamiento (80\%) y otro para validación (20\%), ,esto asegura que el modelo no utilice el set de validación durante el entrenamiento. Así prevenimos problemas como la sobregeneralización del algoritmo.
+\begin{lstlisting}
+    
+    validation_size = 0.20
+    seed = 7
+    X_train, X_validation, Y_train, Y_validation = 
+    model_selection.train_test_split(X, y, 
+    test_size=validation_size, random_state=seed)
+\end{lstlisting}
+
+Compilamos de nuevo el modelo de Regresión Logística pero esta vez sólo con el 80\% de los datos y calculamos el nuevo scoring.
+\begin{lstlisting}
+    name='Logistic Regression'
+    kfold = model_selection.KFold(n_splits=10, random_state=None)
+    cv_results = model_selection.cross_val_score(model, 
+    X_train, Y_train, cv=kfold, scoring='accuracy')
+    msg = "%s: %f (%f)" % (name, cv_results.mean(), cv_results.std())
+    print(msg)
+\end{lstlisting}
+
+Realizamos predicciones de clasificación usando el ``cross validation set'', el conjunto apartado previamente. El código muestra cómo generar las predicciones y calcular la precisión.
+
+\begin{lstlisting}
+    predictions = model.predict(X_validation)
+    print(accuracy_score(Y_validation, predictions))
+\end{lstlisting}
+
+
+\vspace{.3cm}
+
+
+\textbf{Reporte de Resultados del Modelo}
+
+
+
+
+
+Generamos una matriz de confusión que compara las predicciones del modelo con los valores reales, ayudando a evaluar el rendimiento del modelo y detectar errores de clasificación
+\begin{lstlisting}
+    print(confusion_matrix(Y_validation, predictions))
+\end{lstlisting}
+
+
+La función  ``classification\_report()'' genera un informe detallado del rendimiento del modelo de clasificación. Este informe incluye métricas clave para evaluar cómo el modelo clasifica diferentes clases.
+\begin{lstlisting}
+    print(classification_report(Y_validation, predictions))
+\end{lstlisting}
+
+
+
+\vspace{.3cm}
+
+\textbf{Clasificación de nuevos valores}
+
+
+
+
+Por último, inventaremos datos de entrada de navegación de un usuario ficticio:
+
+- Tiempo Duración: 10
+
+
+- Paginas visitadas: 3
+
+
+- Acciones al navegar: 5
+
+
+- Valoración: 9
+
+
+\vspace{.2cm}
+
+
+Lo probamos en el modelo:
+\begin{lstlisting}
+    X_new = pd.DataFrame({'duracion': [10], 'paginas': [3], 'acciones': [5],
+    'valor': [9]})
+    prediction = model.predict(X_new.values)
+    print(prediction)
+\end{lstlisting}
+
+
+
+\section{Resultados}
+
+\textbf{Visualización de datos: }
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.5\textwidth]{dataframe.head.png}
+\caption{ {\small Primeras 5 filas.}}
+\label{figura01}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.6\textwidth]{describe.png}
+\caption{ {\small Descripción de los datos estadísticos. }}
+\label{figura02}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.2\textwidth]{groupby.png}
+\caption{ {\small Función "groupby()".  Vemos que tenemos 86 usuarios ``Clase 0”, es decir Windows, 40 usuarios Mac y 44 de Linux.}}
+\label{figura03}
+\end{figure}
+\begin{figure}[H]
+\centering
+\includegraphics[width=.7\textwidth]{hist.png}
+\caption{ {\small Histogramas de los cuatro Features de entrada: “duración”, “páginas”,”acciones” y “valor”.}}
+\label{figura04}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=1.0\textwidth]{relaciones.png}
+\caption{ {\small Podemos ver una serie de gráficos donde cada variable es comparada con las demás, con puntos codificados por color según la clase, y líneas de regresión para analizar la tendencia lineal entre las variables.}}
+\label{figura05}
+\end{figure}
+
+
+
+
+\textbf{Modelo de Regresión Logística:}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.2\textwidth]{x.shape.png}
+\caption{ {\small Dimensión de la matriz después de excluir la columna ``clase'' de los datos de entrada y la cambiamos a la variable y. }}
+\label{figura06}
+\end{figure}
+
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.3\textwidth]{predict.png}
+\caption{ {\small Los primeros cinco valores en el array ``predictions'', las cuales representan las clases predichas por el modelo para las primeras cinco filas de ( X ).}}
+\label{figura07}
+\end{figure}
+
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.4\textwidth]{model.score.png}
+\caption{ {\small Resultado de usar el método ``model.score()'', para confirmar cuan bueno fue el modelo (precisión de las predicciones).}}
+\label{figura08}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\textbf{Validación del modelo:}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.7\textwidth]{regresion.png}
+\caption{ {\small Resultado de compilar el modelo de Regresión Lógistica con 80\% de los datos de entrada.}}
+\label{figura09}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.4\textwidth]{prediccion.png}
+\caption{ {\small Resultado de la predicción utilizando nuestro ``cross validation set''. Debido a que el tamaño de datos que teniamos era pequeño nuestros aciertos fueron del 85\%.}}
+\label{figura10}
+\end{figure}
+
+\textbf{Reporte de Resultados del Modelo:}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.4\textwidth]{matrix.png}
+\caption{ {\small Resultado de la matriz de confusión, muestra cuantos resultados equivocados tuvo de cada clase (los que no están en la diagonal).}}
+\label{figura11}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.5\textwidth]{reporte class.png}
+\caption{ {\small Podemos ver que el reporte de clasificación del conjunto de validación muestra 18 registros de Windows, 6 de Mac y 10 de Linux. Por ejemplo, para Macintosh hubo 3 aciertos y 3 fallos (recall de 0.5). El F1-score, que equilibra precisión y recall, tiene un promedio de 84\%, lo cual es bastante positivo.}}
+\label{figura12}
+\end{figure}
+
+
+
+\vspace{.3cm}
+
+
+\textbf{Clasificación de Nuevos Valores:}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.2\textwidth]{creacion.png}
+\caption{ {\small El resultado de inventar los datos de entrada; clasifica un usuario tipo 2, es decir, de Linux.}}
+\label{figura13}
+\end{figure}
+
+
+
+\section{Conclusión}
+Al realizar esta actividad me quedó claro que, la Regresión Logística es una herramienta clave en el análisis de datos y la clasificación, pues esta nos ayuda a predecir resultados discretos a partir de características específicas. El poder implimentarlo en Python facilita la creación de modelos útiles, como en este ejercicio de clasificación de sistemas operativos según patrones de navegación web. Durante la realización del código pude reforzar mis conocimientos sobre el uso y funcionamiento de los distintos métodos y funciones que se utilizan en la predicción haciendo uso de la técnica de regresión logística.
+
+\section{Referencias}
+Bagnato, J. (2020). Aprende Machine Learning en Español.
+
+AWS.(2024).¿Qué es la regresión logística?.
+Recuperado de https://aws.amazon.com/es/what-is/logistic-regression/
+\end{document}
+
+
+
+
