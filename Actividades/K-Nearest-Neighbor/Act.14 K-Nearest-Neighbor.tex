@@ -1,0 +1,384 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{K-Nearest-Neighbor}
+\author{Valeria Ybarra López}
+\date{29, Marzo 2025}
+\usepackage [latin1]{inputenc}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage{epsfig}
+\usepackage{indentfirst}
+\usepackage{amsmath, amsfonts, amssymb, amsthm, mathtools}
+
+\usepackage{xcolor} 
+
+\lstset{
+    language=Python,                % Idioma del código
+    basicstyle=\ttfamily\footnotesize, % Fuente y tamaño
+    keywordstyle=\color{blue},     % Color de las palabras clave
+    commentstyle=\color{green},    % Color de los comentarios
+    stringstyle=\color{red},       % Color de las cadenas
+    numbers=left,                  % Números de línea a la izquierda
+    numberstyle=\tiny,             % Estilo de números de línea
+    stepnumber=1,                  % Cada línea numerada
+    frame=single,                  % Cuadro alrededor del código
+    breaklines=true,               % Permitir salto de línea
+    tabsize=4                      % Tamaño de tabulación
+}
+
+
+\begin{document}
+
+\maketitle
+
+\section{Introducción}
+
+El algoritmo K-Nearest-Neighbor (K-NN) es un modelo de tipo supervisado basado en instancias, utilizado en Machine Learning. Se puede aplicar para clasificar nuevas muestras (valores discretos) o para realizar predicciones (regresión, valores continuos). Su simplicidad lo convierte en una buena opción para principiantes. El algoritmo K-NN consiste en clasificar valores al identificar los puntos de datos más cercanos o similares aprendidos durante la fase de entrenamiento, lo que permite inferir nuevos puntos basándose en estas similitudes.
+Tiene como ventaja, su facilidad de comprensión y aplicación. K-NN es más eficiente en datasets pequeños y con pocas características (columnas).
+
+
+\section{Metodología}
+
+\subsection{Carpeta K-Nearest-Neighbor}
+Creamos una carpeta llamada K-Nearest-Neighbor en donde descargaremos el archivo csv proporcionado por el libro para poder realizar la actividad, también crearemos en esa misma carpeta un código .py para la codificación de la actividad.
+
+
+\subsection{Archivo csv}
+El archivo nos proporciona con 257 registros de opiniones de usuarios sobre una app(Reviews).
+
+\subsection{Código}
+Comenzamos importando las librerías: 
+\begin{lstlisting}
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
+import matplotlib.patches as mpatches
+import seaborn as sb
+
+plt.rcParams['figure.figsize'] = (16, 9)
+plt.style.use('ggplot')
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
+\end{lstlisting}
+
+
+\textbf{Leemos archivo de entrada}
+
+
+
+Leemos el csv con pandas, usando separador de punto y coma, pues en las reviews
+hay textos que usan coma. Con .head(10) vemos los 10 primeros registros. También usaremos .describe() para ver las estadísticas de los datos:
+\begin{lstlisting}
+dataframe = pd.read_csv(r"reviews_sentiment.csv",sep=';')
+print(dataframe.head(10))
+print(dataframe.describe())
+\end{lstlisting}
+
+
+
+
+\textbf{Visualizaciones}
+
+
+
+
+Usamos .hist() para poder ver los datos en gráficas:
+\begin{lstlisting}
+dataframe.hist()
+plt.show()
+\end{lstlisting}
+
+
+Dividimos los datos en grupos según los valores en la columna "Star Rating", y usamos el método .size() para ver el número de elementos que hay en cada grupo, también graficamos estos resultados:
+\begin{lstlisting}
+print(dataframe.groupby('Star Rating').size())
+sb.catplot(x='Star Rating',data=dataframe,kind="count", aspect=3)
+plt.show()
+\end{lstlisting}
+
+Graficamos también la cantidad de palabras ('wordcount') para aseguranos que los elementos esten entre 1 y 10 palabras:
+\begin{lstlisting}
+sb.catplot(x='wordcount',data=dataframe,kind="count", aspect=3)
+plt.show()
+\end{lstlisting}
+
+
+
+
+\textbf{Preparamos las entradas}
+
+
+
+Como variables de entrada tenemos a "X" y "y", creamos los sets de entrenamiento y test:
+\begin{lstlisting}
+ X = dataframe[['wordcount','sentimentValue']].values
+y = dataframe['Star Rating'].values
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
+scaler = MinMaxScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+\end{lstlisting}
+
+
+
+
+\textbf{Modelo K-NN con Scikit Learn}
+
+
+
+Al crear nuestro modelo K-NN, definimos el valor de k en 7 y creamos el clasificador, también usando knn.score, imprimimos la precisión del set de entrenamiento y del test:
+
+\begin{lstlisting}
+n_neighbors = 7
+
+knn = KNeighborsClassifier(n_neighbors)
+knn.fit(X_train, y_train)
+print('Accuracy of K-NN classifier on training set: {:.2f}'
+     .format(knn.score(X_train, y_train)))
+print('Accuracy of K-NN classifier on test set: {:.2f}'
+     .format(knn.score(X_test, y_test)))
+\end{lstlisting}
+
+\textbf{Resultados obtenidos del entrenamiento}
+
+
+
+
+Imprimimos la precisión del entrenamiento de los datos:
+\begin{lstlisting}
+pred = knn.predict(X_test)
+print(confusion_matrix(y_test, pred))
+print(classification_report(y_test, pred))
+\end{lstlisting}
+
+
+
+
+
+\textbf{Gráfica de la Clasificación Obtenida}
+
+
+
+Graficaremos la clasificación obtenida para poder ver donde caerán las predicciones:
+
+\begin{lstlisting}
+h = .02  
+
+cmap_light = ListedColormap(['#FFAAAA', '#ffcc99', '#ffffb3','#b3ffff','#c2f0c2'])
+cmap_bold = ListedColormap(['#FF0000', '#ff9933','#FFFF00','#00ffff','#00FF00'])
+
+
+clf = KNeighborsClassifier(n_neighbors, weights='distance')
+clf.fit(X, y)
+
+
+x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
+                         np.arange(y_min, y_max, h))
+Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+
+
+Z = Z.reshape(xx.shape)
+plt.figure()
+plt.pcolormesh(xx, yy, Z, cmap=cmap_light)
+
+plt.scatter(X[:, 0], X[:, 1], c=y, cmap=cmap_bold,
+                edgecolor='k', s=20)
+plt.xlim(xx.min(), xx.max())
+plt.ylim(yy.min(), yy.max())
+    
+patch0 = mpatches.Patch(color='#FF0000', label='1')
+patch1 = mpatches.Patch(color='#ff9933', label='2')
+patch2 = mpatches.Patch(color='#FFFF00', label='3')
+patch3 = mpatches.Patch(color='#00ffff', label='4')
+patch4 = mpatches.Patch(color='#00FF00', label='5')
+plt.legend(handles=[patch0, patch1, patch2, patch3,patch4])
+
+    
+plt.title("5-Class classification (k = %i, weights = '%s')"
+              % (n_neighbors, 'distance'))
+
+plt.show()
+\end{lstlisting}
+
+
+
+
+\textbf{Mejor valor de K}
+
+
+
+
+Realizamos un análisis para evaluar el rendimiento del modelo. Para cada valor de k, el modelo se entrena con los datos: X\_train, y\_train, y se mide su precisión con los datos de prueba: X\_test, y\_test. Guardamos el resultado en la lista "score", y por último graficamos cómo cambia la precisión según el valor de k:
+
+\begin{lstlisting}
+k_range = range(1, 20)
+scores = []
+for k in k_range:
+    knn = KNeighborsClassifier(n_neighbors = k)
+    knn.fit(X_train, y_train)
+    scores.append(knn.score(X_test, y_test))
+plt.figure()
+plt.xlabel('k')
+plt.ylabel('accuracy')
+plt.scatter(k_range, scores)
+plt.xticks([0,5,10,15,20])
+\end{lstlisting}
+
+
+
+
+\textbf{Predecir nuevas muestras}
+
+
+
+Ya teniendo nuestro modelo entrenado, comenzemos a usarlo. Vamos a predecir las estrellas de un usuario de dos maneras, la primera manera (usando el método .predict()):
+\begin{lstlisting}
+    print(clf.predict([[5, 1.0]]))
+\end{lstlisting}
+
+Para que las probabilidades nos den 1,2,3,4 o 5 estrellas, usamos .predict\_proba(): 
+\begin{lstlisting}
+    print(clf.predict_proba([[20, 0.0]]))
+\end{lstlisting}
+
+\section{Resultados}
+
+\textbf{Datos de entrada}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{.head.png}
+    \caption{{\small Resultado de dataframe.head(10), nos muestra los primeros 10 registros.}}
+    \label{figura01}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{.describe.png}
+    \caption{Vemos las estadísticas de los datos, son 257 registros,las estrellas ("Star Rating") van del 1 al 5 la cantidad de palabras ("wordcount") van de 1 hasta 103, y las valoraciones de sentimiento ("sentimentValue") están entre -2.27 y 3.26.}
+    \label{figura02}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{hist.png}
+    \caption{{\small La distribución de "Star Rating" no esta balanceada.}}
+    \label{figura03}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\linewidth]{groupby.png}
+    \caption{{\small Podemos ver que hay mayor cantidad de elementos en el grupo de 3 y 5 estrellas.}}
+    \label{figura04}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{catplot.png}
+    \caption{{\small Gráfica con los elementos de cada grupo de la columna "Star Rating"}}
+    \label{figura05}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{imwordcountage.png}
+    \caption{{\small Gráfica de la cantidad de palabras}}
+    \label{figura06}
+\end{figure}
+
+
+
+\textbf{Modelo K-NN}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{acc.png}
+    \caption{{\small El set de entrenamiento tiene una presición de 90\% y el test un 86\%}}
+    \label{figura07}
+\end{figure}
+
+
+\textbf{Resultado Precisión de entrenamiento}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{pres.png}
+    \caption{{\small La puntuación F1 es del 87\% lo cual es bueno.}}
+    \label{figura08}
+\end{figure}
+
+
+
+\textbf{Clasificación Obtenida}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{graf.png}
+    \caption{{\small Vemos las 5 zonas en las que se relacionan cantidad de palabras con el valor de sentimiento de la
+Review que deja el usuario.}}
+    \label{figura09}
+\end{figure}
+
+\begin{itemize}
+    \item Los usuarios que ponen 1 estrella tienen sentimiento negativo y hasta 25 palabras.
+    \item Los usuarios que ponen 2 estrellas dan muchas explicaciones (hasta 100 palabras) y su sentimiento puede variar entre negativo y algo positivo.
+    \item Los usuarios que ponen 3 estrellas son bastante neutrales en sentimientos, puesto que están en torno al cero y hasta unas 25 palabras.
+    \item Los usuarios que dan 5 estrellas son bastante positivos (de 0,5 en adelante, aproximadamente) y ponen pocas palabras (hasta 10).
+\end{itemize}
+
+
+\textbf{Mejor valor de K}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{accuracy.png}
+    \caption{{\small La gráfica muestra que al tener k=7 a k=14 se logra mayor precisión.}}
+    \label{figura10}
+\end{figure}
+
+
+\textbf{Predecir nuevas muestras}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.1\linewidth]{m1.png}
+    \caption{{\small El resultado de la primera predicción, nos da un valor de [5] lo cual nos indica que para 5 palabras y sentimiento 1, nos valorarán la app con 5 estrellas.}}
+    \label{figura11}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{m2.png}
+    \caption{{\small El resultado de la segunda predicción nos dice que para las coordenadas de 20,0.0 hay un 97\% probabilidad de que nos den 3 estrellas.}}
+    \label{figura12}
+\end{figure}
+
+
+\section{Conclusión}
+Esta actividad nos ayudó a desarrollar un modelo en Python, empleando el algoritmo K-Nearest Neighbor. Este método se basa en analizar los "k vecinos más cercanos" para clasificar nuevos puntos. En este tipo de algoritmo es necesario  tener con un número adecuado de muestras para garantizar un entrenamiento eficiente del modelo, en este ejercio solo usamos dos columnas para entrenar el modelo pero de todas maneras las predicciones tenian un buen resultado de precisión. Realizar nuevas predicciones me permitió entnder mejor como funciona el algoritmo K-NN.
+
+\section{Referencias}
+Bagnato, J. (2020). Aprende Machine Learning en Español.
+
+
+
+\end{document}
