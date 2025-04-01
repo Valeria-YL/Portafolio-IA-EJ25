@@ -21,6 +21,8 @@
 
 [Act.13 Random Forest](https://github.com/Valeria-YL/Portafolio-IA-EJ25/tree/050e67bef425386a6ae18b10e8cb63db97e610df/Actividades/Random%20Forest)
 
+[Act.14 K-Nearest-Neighbor](https://github.com/Valeria-YL/Portafolio-IA-EJ25/tree/efd0d3a1d5c982e3e32627825de9b21495549f62/Actividades/K-Nearest-Neighbor)
+
 
 # Certificados
 ## Kaggle
