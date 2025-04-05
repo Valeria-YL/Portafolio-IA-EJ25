@@ -46,5 +46,7 @@
 
 [Intro to Deep Learning](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/08df9ebd102a8ced11f7d98c8bad23b26de93e7e/Cerftificados/Valeria%20Ybarra%20-%20Intro%20to%20Deep%20Learning.png)
 
+[Computer Vision](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/10d626f94cf7d76f0390f45a0f59b82e4549054c/Cerftificados/Valeria%20Ybarra%20-%20Computer%20Vision.png)
+
 ## Cognitive Class
 [Python for Data Science](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/08df9ebd102a8ced11f7d98c8bad23b26de93e7e/Cerftificados/IBM%20PY0101EN%20Certificate%20_%20Cognitive%20Class.png)
