@@ -24,6 +24,7 @@
 [Act.14 K-Nearest-Neighbor](https://github.com/Valeria-YL/Portafolio-IA-EJ25/tree/efd0d3a1d5c982e3e32627825de9b21495549f62/Actividades/K-Nearest-Neighbor)
 
 
+
 # Certificados
 ## Kaggle
 [Intro to Programming](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/08df9ebd102a8ced11f7d98c8bad23b26de93e7e/Cerftificados/Valeria%20Ybarra%20-%20Intro%20to%20Programming.png)
@@ -47,6 +48,8 @@
 [Intro to Deep Learning](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/08df9ebd102a8ced11f7d98c8bad23b26de93e7e/Cerftificados/Valeria%20Ybarra%20-%20Intro%20to%20Deep%20Learning.png)
 
 [Computer Vision](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/10d626f94cf7d76f0390f45a0f59b82e4549054c/Cerftificados/Valeria%20Ybarra%20-%20Computer%20Vision.png)
+
+[Time Series](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/7bccf036c563c2bb037bf2eacebb8578dd74b9ff/Cerftificados/Valeria%20Ybarra%20-%20Time%20Series.png)
 
 ## Cognitive Class
 [Python for Data Science](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/08df9ebd102a8ced11f7d98c8bad23b26de93e7e/Cerftificados/IBM%20PY0101EN%20Certificate%20_%20Cognitive%20Class.png)
