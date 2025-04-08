@@ -51,5 +51,7 @@
 
 [Time Series](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/7bccf036c563c2bb037bf2eacebb8578dd74b9ff/Cerftificados/Valeria%20Ybarra%20-%20Time%20Series.png)
 
+[Data Cleaning](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/30285c97f89298fac808ac3b4a7ce1eb0d3b541b/Cerftificados/Valeria%20Ybarra%20-%20Data%20Cleaning.png)
+
 ## Cognitive Class
 [Python for Data Science](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/08df9ebd102a8ced11f7d98c8bad23b26de93e7e/Cerftificados/IBM%20PY0101EN%20Certificate%20_%20Cognitive%20Class.png)
