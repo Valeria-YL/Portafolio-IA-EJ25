@@ -53,5 +53,7 @@
 
 [Data Cleaning](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/30285c97f89298fac808ac3b4a7ce1eb0d3b541b/Cerftificados/Valeria%20Ybarra%20-%20Data%20Cleaning.png)
 
+[Intro to AI Ethics](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/263c39bd14f1bb9d7646209a17c2fdedb7ffb81f/Cerftificados/Valeria%20Ybarra%20-%20Intro%20to%20AI%20Ethics.png)
+
 ## Cognitive Class
 [Python for Data Science](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/08df9ebd102a8ced11f7d98c8bad23b26de93e7e/Cerftificados/IBM%20PY0101EN%20Certificate%20_%20Cognitive%20Class.png)
