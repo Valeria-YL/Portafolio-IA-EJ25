@@ -55,5 +55,7 @@
 
 [Intro to AI Ethics](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/263c39bd14f1bb9d7646209a17c2fdedb7ffb81f/Cerftificados/Valeria%20Ybarra%20-%20Intro%20to%20AI%20Ethics.png)
 
+[Geospatial Analysis](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/42165d54cfa580074d9560740e3faf6fbe0450f7/Cerftificados/Valeria%20Ybarra%20-%20Geospatial%20Analysis.png)
+
 ## Cognitive Class
 [Python for Data Science](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/08df9ebd102a8ced11f7d98c8bad23b26de93e7e/Cerftificados/IBM%20PY0101EN%20Certificate%20_%20Cognitive%20Class.png)
