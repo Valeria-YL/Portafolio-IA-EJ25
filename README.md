@@ -59,5 +59,7 @@
 
 [Machine Learning Explainability](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/2448d40f10b4e169f3a579c21b0200e6a1be5996/Cerftificados/Valeria%20Ybarra%20-%20Machine%20Learning%20Explainability.png)
 
+[Intro to Game AI and Reinforcement Learning](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/672057417b22a6b745d7ec9931980d5f26aad9fb/Cerftificados/Valeria%20Ybarra%20-%20Intro%20to%20Game%20AI%20and%20Reinforcement%20Learning.png)
+
 ## Cognitive Class
 [Python for Data Science](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/08df9ebd102a8ced11f7d98c8bad23b26de93e7e/Cerftificados/IBM%20PY0101EN%20Certificate%20_%20Cognitive%20Class.png)
