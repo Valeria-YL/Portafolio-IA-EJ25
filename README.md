@@ -57,5 +57,7 @@
 
 [Geospatial Analysis](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/42165d54cfa580074d9560740e3faf6fbe0450f7/Cerftificados/Valeria%20Ybarra%20-%20Geospatial%20Analysis.png)
 
+[Machine Learning Explainability](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/2448d40f10b4e169f3a579c21b0200e6a1be5996/Cerftificados/Valeria%20Ybarra%20-%20Machine%20Learning%20Explainability.png)
+
 ## Cognitive Class
 [Python for Data Science](https://github.com/Valeria-YL/Portafolio-IA-EJ25/blob/08df9ebd102a8ced11f7d98c8bad23b26de93e7e/Cerftificados/IBM%20PY0101EN%20Certificate%20_%20Cognitive%20Class.png)
